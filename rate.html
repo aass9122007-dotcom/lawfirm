@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقييم الاستشارة | مكتب الميزان للمحاماة</title>
+<meta name="description" content="شاركنا رأيك في الاستشارة القانونية التي حصلت عليها لمساعدتنا على تطوير خدماتنا.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">تقييم الاستشارة</span>
+    <h1>رأيك يهمنا</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / تقييم الاستشارة</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container" style="max-width:560px">
+      <div class="card" id="rateCard">
+        <div id="rateForm">
+          <h3>كيف كانت تجربتك مع محاميك؟</h3>
+          <p id="bookingInfo" style="color:var(--text-muted)"></p>
+
+          <div class="field">
+            <label>تقييمك العام</label>
+            <div class="stars" id="stars">
+              <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>ما الذي أعجبك أو يمكن تحسينه؟ (اختياري)</label>
+            <textarea id="rateComment" placeholder="شاركنا رأيك بالتفصيل..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" id="submitRating" disabled>إرسال التقييم</button>
+        </div>
+
+        <div id="rateThanks" style="display:none;text-align:center;padding:20px 0">
+          <div class="confirm-check">✓</div>
+          <h3>شكرًا لتقييمك!</h3>
+          <p>رأيك يساعدنا على تقديم خدمة أفضل لجميع عملائنا.</p>
+          <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+let selectedStars = 0;
+const params = new URLSearchParams(location.search);
+const bookingId = params.get("booking");
+
+async function initRating(){
+  if (bookingId){
+    const booking = await window.LocalStore.getById("bookings", bookingId);
+    if (booking){
+      document.getElementById("bookingInfo").textContent = `استشارتك مع ${booking.lawyerName} بتاريخ ${booking.date} — ${booking.specialty}`;
+    }
+  } else {
+    document.getElementById("bookingInfo").textContent = "قيّم آخر استشارة حصلت عليها معنا.";
+  }
+}
+
+document.querySelectorAll("#stars span").forEach(star=>{
+  star.addEventListener("click", ()=>{
+    selectedStars = parseInt(star.dataset.v,10);
+    document.querySelectorAll("#stars span").forEach(s=>{
+      s.classList.toggle("on", parseInt(s.dataset.v,10) <= selectedStars);
+    });
+    document.getElementById("submitRating").disabled = false;
+  });
+});
+
+document.getElementById("submitRating").addEventListener("click", async ()=>{
+  const btn = document.getElementById("submitRating");
+  btn.disabled = true; btn.textContent = "جارِ الإرسال...";
+
+  const record = await window.LocalStore.insert("ratings", {
+    bookingId: bookingId || null,
+    stars: selectedStars,
+    comment: document.getElementById("rateComment").value.trim(),
+  });
+
+  try{
+    await fetch(window.APP_CONFIG.n8n.ratingWebhookUrl, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(record), mode:"no-cors",
+    });
+  }catch(err){ console.warn("سيتم تفعيل الإرسال الفعلي بعد ربط n8n:", err); }
+
+  document.getElementById("rateForm").style.display = "none";
+  document.getElementById("rateThanks").style.display = "block";
+});
+
+document.addEventListener("DOMContentLoaded", initRating);
+</script>
+</body>
+</html>

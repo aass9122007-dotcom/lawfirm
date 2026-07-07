@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فريق العمل | مكتب الميزان للمحاماة</title>
+<meta name="description" content="تعرّف على نخبة المحامين والمستشارين القانونيين في مكتب الميزان للمحاماة، بخبراتهم في مختلف التخصصات القانونية.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">فريق العمل</span>
+    <h1>نخبة من المحامين في خدمة قضيتك</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / فريق العمل</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="filters-bar reveal in" id="teamFilters"></div>
+      <div class="grid grid-3" id="teamGrid"></div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+let ALL_LAWYERS = [];
+
+async function loadTeam(){
+  ALL_LAWYERS = (await window.LocalStore.getAll("lawyers")).filter(l=>l.active);
+  renderFilters();
+  renderGrid(ALL_LAWYERS);
+}
+
+function renderFilters(){
+  const specialties = ["الكل", ...new Set(ALL_LAWYERS.flatMap(l=>l.specialties))];
+  const wrap = document.getElementById("teamFilters");
+  wrap.innerHTML = specialties.map((s,i)=>`<button class="filter-chip ${i===0?"active":""}" data-f="${s}">${s}</button>`).join("");
+  wrap.querySelectorAll(".filter-chip").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      wrap.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const f = btn.dataset.f;
+      renderGrid(f==="الكل"?ALL_LAWYERS:ALL_LAWYERS.filter(l=>l.specialties.includes(f)));
+    });
+  });
+}
+
+function renderGrid(list){
+  const grid = document.getElementById("teamGrid");
+  grid.innerHTML = list.map((l,i)=>`
+    <div class="card team-card reveal reveal-delay-${i%3}">
+      <div class="team-photo">${l.avatarLetter}</div>
+      <h3>${l.name}</h3>
+      <div class="role">${l.role}</div>
+      <p>${l.bio}</p>
+      <div class="team-tags">${l.specialties.map(s=>`<span class="tag">${s}</span>`).join("")}</div>
+      <a href="booking.html?lawyer=${l.id}" class="btn btn-ghost btn-sm" style="margin-top:18px">احجز مع ${l.name.split("/")[1]?.trim() || l.name}</a>
+    </div>
+  `).join("");
+  initReveal();
+}
+
+document.addEventListener("DOMContentLoaded", loadTeam);
+</script>
+</body>
+</html>

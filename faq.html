@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأسئلة الشائعة | مكتب الميزان للمحاماة</title>
+<meta name="description" content="إجابات شافية عن أكثر الأسئلة تكرارًا حول حجز الاستشارات، الدفع، السرية، وطرق التواصل مع مكتب الميزان للمحاماة.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">مركز المساعدة</span>
+    <h1>الأسئلة الشائعة</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / الأسئلة الشائعة</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container" style="max-width:840px">
+      <div class="field faq-search reveal in">
+        <input type="text" id="faqSearch" placeholder="🔍 ابحث عن سؤالك...">
+      </div>
+      <div class="filters-bar reveal in" id="faqFilters"></div>
+      <div id="faqList" class="reveal in"></div>
+
+      <div class="card reveal" style="margin-top:40px;text-align:center;background:var(--ink);border:none;color:#fff">
+        <h3 style="color:#fff">لم تجد إجابة لسؤالك؟</h3>
+        <p style="color:#C9D2DE">تحدث مع مساعدنا الذكي عبر أيقونة المحادثة، أو تواصل مباشرة مع فريقنا.</p>
+        <a href="contact.html" class="btn btn-gold">تواصل معنا</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+let ALL_FAQS = [];
+let activeCat = "الكل";
+
+async function loadFaqs(){
+  ALL_FAQS = await window.LocalStore.getAll("faqs");
+  renderFilters();
+  applyFilters();
+}
+
+function renderFilters(){
+  const cats = ["الكل", ...new Set(ALL_FAQS.map(f=>f.cat))];
+  const wrap = document.getElementById("faqFilters");
+  wrap.innerHTML = cats.map((c,i)=>`<button class="filter-chip ${i===0?"active":""}" data-f="${c}">${c}</button>`).join("");
+  wrap.querySelectorAll(".filter-chip").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      wrap.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      activeCat = btn.dataset.f;
+      applyFilters();
+    });
+  });
+}
+
+function applyFilters(){
+  const term = document.getElementById("faqSearch").value.trim().toLowerCase();
+  let list = activeCat==="الكل" ? ALL_FAQS : ALL_FAQS.filter(f=>f.cat===activeCat);
+  if (term) list = list.filter(f => f.q.toLowerCase().includes(term) || f.a.toLowerCase().includes(term));
+  renderList(list);
+}
+
+function renderList(list){
+  const wrap = document.getElementById("faqList");
+  if (!list.length){ wrap.innerHTML = `<p style="text-align:center">لا توجد أسئلة مطابقة.</p>`; return; }
+  wrap.innerHTML = list.map(f=>`
+    <div class="accordion-item">
+      <div class="accordion-head">
+        <span>${f.q}</span>
+        <span class="plus">+</span>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner"><p>${f.a}</p></div></div>
+    </div>
+  `).join("");
+
+  wrap.querySelectorAll(".accordion-item").forEach(item=>{
+    const head = item.querySelector(".accordion-head");
+    const body = item.querySelector(".accordion-body");
+    head.addEventListener("click", ()=>{
+      const isOpen = item.classList.contains("open");
+      wrap.querySelectorAll(".accordion-item").forEach(i=>{
+        i.classList.remove("open");
+        i.querySelector(".accordion-body").style.maxHeight = null;
+      });
+      if (!isOpen){
+        item.classList.add("open");
+        body.style.maxHeight = body.scrollHeight + "px";
+      }
+    });
+  });
+}
+
+document.getElementById("faqSearch").addEventListener("input", applyFilters);
+document.addEventListener("DOMContentLoaded", loadFaqs);
+</script>
+</body>
+</html>

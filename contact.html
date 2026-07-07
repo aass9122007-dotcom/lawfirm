@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تواصل معنا | مكتب الميزان للمحاماة</title>
+<meta name="description" content="تواصل مع مكتب الميزان للمحاماة عبر الهاتف، البريد الإلكتروني، واتساب، أو نموذج التواصل المباشر.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">تواصل معنا</span>
+    <h1>نحن هنا لمساعدتك في أي وقت</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / تواصل معنا</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container grid grid-2" style="align-items:flex-start;gap:50px">
+      <div class="reveal in">
+        <h2>أرسل لنا رسالتك</h2>
+        <p>سيقوم فريقنا بالرد عليك خلال ساعات العمل الرسمية.</p>
+        <form id="contactForm">
+          <div class="field-row">
+            <div class="field"><label>الاسم الكامل</label><input type="text" required id="cName"></div>
+            <div class="field"><label>رقم الهاتف</label><input type="tel" required id="cPhone"></div>
+          </div>
+          <div class="field"><label>البريد الإلكتروني</label><input type="email" required id="cEmail"></div>
+          <div class="field"><label>الموضوع</label>
+            <select id="cSubject">
+              <option>استفسار عام</option>
+              <option>حجز استشارة</option>
+              <option>شكوى أو ملاحظة</option>
+              <option>تعاون واستشارات مؤسسية</option>
+            </select>
+          </div>
+          <div class="field"><label>الرسالة</label><textarea required id="cMessage" placeholder="اكتب تفاصيل رسالتك هنا..."></textarea></div>
+          <button type="submit" class="btn btn-primary btn-block" id="contactSubmitBtn">إرسال الرسالة</button>
+        </form>
+      </div>
+
+      <div class="reveal in reveal-delay-1">
+        <div class="card" style="margin-bottom:20px">
+          <h3>بيانات التواصل</h3>
+          <p id="cAddress"></p>
+          <p dir="ltr" style="text-align:right" id="cPhoneInfo"></p>
+          <p id="cEmailInfo"></p>
+          <p id="cHours"></p>
+        </div>
+        <div class="card" style="height:260px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--ink),var(--ink-2));color:var(--brass-light)">
+          <div style="text-align:center">
+            <div style="font-size:2.4rem">📍</div>
+            <p style="color:#C9D2DE">خريطة الموقع — الجيزة، مصر</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+function fillOfficeInfo(){
+  const o = window.APP_CONFIG.office;
+  document.getElementById("cAddress").textContent = "📍 " + o.address;
+  document.getElementById("cPhoneInfo").textContent = "📞 " + o.phone;
+  document.getElementById("cEmailInfo").textContent = "✉️ " + o.email;
+  document.getElementById("cHours").textContent = "🕒 " + o.workHours;
+}
+
+document.getElementById("contactForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const btn = document.getElementById("contactSubmitBtn");
+  btn.disabled = true; btn.textContent = "جارِ الإرسال...";
+
+  const payload = {
+    name: document.getElementById("cName").value,
+    phone: document.getElementById("cPhone").value,
+    email: document.getElementById("cEmail").value,
+    subject: document.getElementById("cSubject").value,
+    message: document.getElementById("cMessage").value,
+    sentAt: new Date().toISOString(),
+    source: "contact-form",
+  };
+
+  try{
+    await fetch(window.APP_CONFIG.n8n.contactWebhookUrl, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
+      mode: "no-cors",
+    });
+  }catch(err){ console.warn("سيتم تفعيل الإرسال الفعلي بعد ربط n8n:", err); }
+
+  showToast("تم إرسال رسالتك بنجاح، سنتواصل معك قريبًا.", "success");
+  e.target.reset();
+  btn.disabled = false; btn.textContent = "إرسال الرسالة";
+});
+
+document.addEventListener("DOMContentLoaded", fillOfficeInfo);
+</script>
+</body>
+</html>

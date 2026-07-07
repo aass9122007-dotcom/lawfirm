@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حجز استشارة قانونية | مكتب الميزان للمحاماة</title>
+<meta name="description" content="احجز استشارتك القانونية الآن — اختر نوع الاستشارة والتخصص والمحامي والموعد المناسب، وأكمل الدفع بسهولة.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">حجز استشارة</span>
+    <h1>احجز استشارتك القانونية في خطوات بسيطة</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / حجز استشارة</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container" style="max-width:820px">
+
+      <div class="wizard-steps" id="wizardSteps">
+        <div class="wizard-step active" data-step="1"><div class="dot">1</div><span class="label">نوع الاستشارة</span></div>
+        <div class="wizard-step" data-step="2"><div class="dot">2</div><span class="label">التخصص والمحامي</span></div>
+        <div class="wizard-step" data-step="3"><div class="dot">3</div><span class="label">الموعد</span></div>
+        <div class="wizard-step" data-step="4"><div class="dot">4</div><span class="label">بياناتك</span></div>
+        <div class="wizard-step" data-step="5"><div class="dot">5</div><span class="label">الدفع والتأكيد</span></div>
+      </div>
+
+      <div class="card">
+        <!-- الخطوة 1: نوع الاستشارة -->
+        <div class="wizard-panel active" data-panel="1">
+          <h3>اختر نوع الاستشارة</h3>
+          <p>حدد الطريقة الأنسب لك لإجراء الاستشارة القانونية.</p>
+          <div class="choice-grid">
+            <div class="choice" data-value="حضورية">
+              <div class="ic">🏛️</div><h4>حضورية</h4><p>في مقر المكتب</p>
+            </div>
+            <div class="choice" data-value="أونلاين">
+              <div class="ic">💻</div><h4>أونلاين</h4><p>عبر مكالمة فيديو</p>
+            </div>
+            <div class="choice" data-value="هاتفية">
+              <div class="ic">📞</div><h4>هاتفية</h4><p>مكالمة صوتية</p>
+            </div>
+          </div>
+          <div style="text-align:left;margin-top:30px">
+            <button class="btn btn-primary" id="toStep2" disabled>التالي ←</button>
+          </div>
+        </div>
+
+        <!-- الخطوة 2: التخصص والمحامي -->
+        <div class="wizard-panel" data-panel="2">
+          <h3>اختر التخصص القانوني والمحامي</h3>
+          <div class="field">
+            <label>التخصص القانوني</label>
+            <select id="specialtySelect"></select>
+          </div>
+          <div class="field">
+            <label>المحامي المسؤول</label>
+            <div class="grid grid-2" id="lawyerChoices"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:30px">
+            <button class="btn btn-ghost" data-back="1">→ السابق</button>
+            <button class="btn btn-primary" id="toStep3" disabled>التالي ←</button>
+          </div>
+        </div>
+
+        <!-- الخطوة 3: الموعد -->
+        <div class="wizard-panel" data-panel="3">
+          <h3>اختر التاريخ والوقت المناسبين</h3>
+          <div class="field">
+            <label>التاريخ</label>
+            <input type="date" id="dateInput">
+          </div>
+          <div class="field">
+            <label>الوقت المتاح</label>
+            <div class="grid grid-3" id="timeSlots"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:30px">
+            <button class="btn btn-ghost" data-back="2">→ السابق</button>
+            <button class="btn btn-primary" id="toStep4" disabled>التالي ←</button>
+          </div>
+        </div>
+
+        <!-- الخطوة 4: بيانات العميل -->
+        <div class="wizard-panel" data-panel="4">
+          <h3>بياناتك الشخصية</h3>
+          <div class="field-row">
+            <div class="field"><label>الاسم الكامل</label><input type="text" id="clientName" required></div>
+            <div class="field"><label>رقم الهاتف</label><input type="tel" id="clientPhone" required></div>
+          </div>
+          <div class="field"><label>البريد الإلكتروني</label><input type="email" id="clientEmail" required></div>
+          <div class="field"><label>وصف مختصر للقضية أو الاستفسار</label><textarea id="clientNotes" placeholder="اكتب تفاصيل موجزة تساعد المحامي على الاستعداد للاستشارة..."></textarea></div>
+          <div class="field">
+            <label>رفع مستندات (اختياري)</label>
+            <div class="upload-box" id="uploadBox">
+              <div class="ic">📎</div>
+              <p style="margin:0">اسحب الملفات هنا أو اضغط للاختيار (PDF, JPG, PNG)</p>
+              <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+            </div>
+            <div class="file-list" id="fileList"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:30px">
+            <button class="btn btn-ghost" data-back="3">→ السابق</button>
+            <button class="btn btn-primary" id="toStep5" disabled>مراجعة الحجز ←</button>
+          </div>
+        </div>
+
+        <!-- الخطوة 5: المراجعة + الدفع + التأكيد -->
+        <div class="wizard-panel" data-panel="5">
+          <div id="reviewSection">
+            <h3>مراجعة تفاصيل الحجز</h3>
+            <div class="summary-box" id="summaryBox"></div>
+            <button class="btn btn-primary btn-block" id="confirmBookingBtn">تأكيد الحجز وعرض بيانات الدفع</button>
+            <button class="btn btn-ghost btn-block" data-back="4" style="margin-top:10px">→ تعديل البيانات</button>
+          </div>
+
+          <div id="paymentSection" style="display:none">
+            <h3>إتمام الدفع</h3>
+            <p>حجزك رقم <b id="bookingRefNum"></b> بانتظار إتمام الدفع لتأكيده. الرجاء تحويل المبلغ عبر إحدى الوسائل التالية، ثم رفع صورة الإيصال.</p>
+            <div class="payment-box">
+              <h4>بيانات الدفع</h4>
+              <div class="payment-detail"><span>البنك</span><b id="payBank"></b></div>
+              <div class="payment-detail"><span>اسم الحساب</span><b id="payAccName"></b></div>
+              <div class="payment-detail"><span>رقم الآيبان (IBAN)</span><b id="payIban" title="اضغط للنسخ"></b></div>
+              <div class="payment-detail"><span>فودافون كاش</span><b id="payVfCash" title="اضغط للنسخ"></b></div>
+              <div class="payment-detail"><span>InstaPay</span><b id="payInstapay" title="اضغط للنسخ"></b></div>
+              <div class="payment-detail"><span>المبلغ المطلوب</span><b id="payAmount" style="color:var(--brass-light)"></b></div>
+            </div>
+            <div class="field">
+              <label>رفع صورة أو إيصال الدفع</label>
+              <div class="upload-box" id="receiptBox">
+                <div class="ic">🧾</div>
+                <p style="margin:0">اضغط لرفع صورة الإيصال (JPG, PNG, PDF)</p>
+                <input type="file" id="receiptInput" accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+              </div>
+              <div class="file-list" id="receiptList"></div>
+            </div>
+            <button class="btn btn-primary btn-block" id="submitPaymentBtn" disabled>إرسال إثبات الدفع</button>
+          </div>
+
+          <div id="confirmSection" style="display:none">
+            <div class="confirm-panel">
+              <div class="confirm-check">✓</div>
+              <h3>تم استلام طلبك بنجاح!</h3>
+              <p>سيقوم فريقنا بمراجعة إثبات الدفع وتأكيد حجزك خلال وقت قصير. ستصلك رسالة تأكيد فور اعتماد الطلب على البريد الإلكتروني ورقم الهاتف المسجّلين.</p>
+              <div class="summary-box" id="finalSummaryBox" style="text-align:right"></div>
+              <a href="index.html" class="btn btn-primary">العودة للرئيسية</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script src="js/booking.js"></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المقالات القانونية | مكتب الميزان للمحاماة</title>
+<meta name="description" content="مقالات قانونية توعوية من إعداد فريق مكتب الميزان للمحاماة في القانون التجاري، الأحوال الشخصية، الجنائي، العقاري، والعمالي.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">المدونة القانونية</span>
+    <h1>مقالات ودراسات قانونية لتوعيتك بحقوقك</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / المقالات القانونية</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="field" style="max-width:420px;margin-bottom:26px" class="reveal in">
+        <input type="text" id="articleSearch" placeholder="ابحث في المقالات...">
+      </div>
+      <div class="filters-bar reveal in" id="articleFilters"></div>
+      <div class="grid grid-3" id="articlesGrid"></div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+let ALL_ARTICLES = [];
+let activeCategory = "الكل";
+
+async function loadArticles(){
+  ALL_ARTICLES = await window.LocalStore.getAll("articles");
+  ALL_ARTICLES.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  renderFilters();
+  applyFilters();
+}
+
+function renderFilters(){
+  const cats = ["الكل", ...new Set(ALL_ARTICLES.map(a=>a.category))];
+  const wrap = document.getElementById("articleFilters");
+  wrap.innerHTML = cats.map((c,i)=>`<button class="filter-chip ${i===0?"active":""}" data-f="${c}">${c}</button>`).join("");
+  wrap.querySelectorAll(".filter-chip").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      wrap.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      activeCategory = btn.dataset.f;
+      applyFilters();
+    });
+  });
+}
+
+function applyFilters(){
+  const term = document.getElementById("articleSearch").value.trim().toLowerCase();
+  let list = activeCategory==="الكل" ? ALL_ARTICLES : ALL_ARTICLES.filter(a=>a.category===activeCategory);
+  if (term) list = list.filter(a => a.title.toLowerCase().includes(term) || a.excerpt.toLowerCase().includes(term));
+  renderGrid(list);
+}
+
+function renderGrid(list){
+  const grid = document.getElementById("articlesGrid");
+  if (!list.length){
+    grid.innerHTML = `<p style="grid-column:1/-1;text-align:center">لا توجد مقالات مطابقة لبحثك.</p>`;
+    return;
+  }
+  grid.innerHTML = list.map((a,i)=>`
+    <div class="card article-card reveal reveal-delay-${i%3}">
+      <div class="article-thumb">⚖</div>
+      <div class="article-meta"><span>${new Date(a.date).toLocaleDateString("ar-EG",{year:"numeric",month:"long",day:"numeric"})}</span><span>•</span><span>${a.category}</span></div>
+      <h3>${a.title}</h3>
+      <p>${a.excerpt}</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px">
+        <span style="font-size:.8rem;color:var(--text-muted)">${a.author}</span>
+        <span class="more">قراءة المزيد ←</span>
+      </div>
+    </div>
+  `).join("");
+  initReveal();
+}
+
+document.getElementById("articleSearch").addEventListener("input", applyFilters);
+document.addEventListener("DOMContentLoaded", loadArticles);
+</script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خدماتنا القانونية | مكتب الميزان للمحاماة</title>
+<meta name="description" content="خدماتنا القانونية تغطي القانون التجاري، الأحوال الشخصية، الجنائي، العقاري، العمالي، والإداري. استخدم حاسبة الرسوم لمعرفة التكلفة التقديرية لاستشارتك.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="page-header">
+  <div class="container">
+    <span class="eyebrow" style="background:rgba(201,162,75,.12);border-color:rgba(201,162,75,.35);color:var(--brass-light)">خدماتنا</span>
+    <h1>تخصصات قانونية شاملة لكل احتياجاتك</h1>
+    <p class="breadcrumb"><a href="index.html">الرئيسية</a> / خدماتنا</p>
+  </div>
+</header>
+
+<main>
+  <section class="section">
+    <div class="container">
+      <div class="filters-bar reveal in" id="serviceFilters"></div>
+      <div class="grid grid-3" id="servicesGrid"></div>
+    </div>
+  </section>
+
+  <!-- حاسبة الرسوم التقديرية -->
+  <section class="section section-soft">
+    <div class="container">
+      <div class="section-head center reveal">
+        <span class="eyebrow">حاسبة تقديرية</span>
+        <h2>احسب التكلفة التقديرية لاستشارتك القانونية</h2>
+        <p>نتيجة الحاسبة تقديرية فقط وقد تختلف حسب تعقيد القضية، وسيتم تأكيد السعر النهائي عند إتمام الحجز.</p>
+      </div>
+      <div class="calc-box reveal" style="max-width:640px;margin:0 auto">
+        <div class="field">
+          <label>التخصص القانوني</label>
+          <select id="calcSpecialty"></select>
+        </div>
+        <div class="field">
+          <label>نوع الاستشارة</label>
+          <select id="calcType">
+            <option value="1">هاتفية (السعر الأساسي)</option>
+            <option value="1.15">أونلاين (فيديو) — +15%</option>
+            <option value="1.3">حضورية بالمكتب — +30%</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>مدى تعقيد القضية: <span class="range-value" id="complexityLabel">متوسط</span></label>
+          <input type="range" id="calcComplexity" min="1" max="3" value="1.5" step="0.5">
+        </div>
+        <button class="btn btn-primary btn-block" id="calcBtn">احسب التكلفة التقديرية</button>
+        <div class="calc-result" id="calcResult" style="display:none">
+          <div style="font-size:.85rem;color:#9FAAB9">التكلفة التقديرية للاستشارة</div>
+          <div class="amount" id="calcAmount">0 ج.م</div>
+          <a href="booking.html" class="btn btn-gold btn-sm" style="margin-top:14px">احجز الآن بهذا التخصص</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/main.js"></script>
+<script>
+let ALL_SERVICES = [];
+
+async function loadServices(){
+  ALL_SERVICES = await window.LocalStore.getAll("services");
+  renderFilters();
+  renderGrid(ALL_SERVICES);
+  fillCalcSpecialties();
+}
+
+function renderFilters(){
+  const specialties = ["الكل", ...new Set(ALL_SERVICES.map(s=>s.specialty))];
+  const wrap = document.getElementById("serviceFilters");
+  wrap.innerHTML = specialties.map((s,i)=>`<button class="filter-chip ${i===0?"active":""}" data-f="${s}">${s}</button>`).join("");
+  wrap.querySelectorAll(".filter-chip").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      wrap.querySelectorAll(".filter-chip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const f = btn.dataset.f;
+      renderGrid(f==="الكل"?ALL_SERVICES:ALL_SERVICES.filter(s=>s.specialty===f));
+    });
+  });
+}
+
+function renderGrid(list){
+  const grid = document.getElementById("servicesGrid");
+  grid.innerHTML = list.map((s,i)=>`
+    <div class="card service-card reveal reveal-delay-${i%3}">
+      <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <span class="tag">${s.specialty}</span>
+      <span class="price-tag">تبدأ من ${s.basePrice} ج.م</span><br>
+      <a href="booking.html?specialty=${encodeURIComponent(s.specialty)}" class="more">احجز استشارة في هذا التخصص ←</a>
+    </div>
+  `).join("");
+  initReveal();
+}
+
+function fillCalcSpecialties(){
+  const sel = document.getElementById("calcSpecialty");
+  sel.innerHTML = ALL_SERVICES.map(s=>`<option value="${s.basePrice}">${s.title}</option>`).join("");
+}
+
+document.getElementById("calcComplexity")?.addEventListener("input", (e)=>{
+  const labels = {1:"بسيط",1.5:"بسيط إلى متوسط",2:"متوسط",2.5:"متوسط إلى معقد",3:"معقد"};
+  document.getElementById("complexityLabel").textContent = labels[e.target.value] || "متوسط";
+});
+
+document.getElementById("calcBtn")?.addEventListener("click", ()=>{
+  const base = parseFloat(document.getElementById("calcSpecialty").value);
+  const typeMultiplier = parseFloat(document.getElementById("calcType").value);
+  const complexity = parseFloat(document.getElementById("calcComplexity").value) / 1.5;
+  const total = Math.round(base * typeMultiplier * complexity / 5) * 5;
+  document.getElementById("calcAmount").textContent = total.toLocaleString("ar-EG") + " ج.م";
+  document.getElementById("calcResult").style.display = "block";
+});
+
+document.addEventListener("DOMContentLoaded", loadServices);
+</script>
+</body>
+</html>
