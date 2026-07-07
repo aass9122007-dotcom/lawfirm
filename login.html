@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول | لوحة تحكم مكتب الميزان</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="login-shell">
+  <div class="login-card">
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:2.4rem">⚖️</div>
+      <h2 style="margin-top:10px">لوحة تحكم الميزان</h2>
+      <p style="color:var(--text-muted)">سجّل الدخول لإدارة المكتب</p>
+    </div>
+    <div class="field"><label>اسم المستخدم</label><input type="text" id="loginUser" placeholder="admin"></div>
+    <div class="field"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <button class="btn btn-primary btn-block" id="loginBtn">تسجيل الدخول</button>
+    <p style="text-align:center;margin-top:16px;font-size:.78rem;color:var(--text-muted)">بيانات تجريبية: admin / admin123</p>
+    <p style="text-align:center;margin-top:6px"><a href="../index.html" style="font-size:.8rem;color:var(--accent-2)">← العودة للموقع الرئيسي</a></p>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/data.js"></script>
+<script>
+document.getElementById("loginBtn").addEventListener("click", async ()=>{
+  const u = document.getElementById("loginUser").value.trim();
+  const p = document.getElementById("loginPass").value.trim();
+  const ok = await window.LocalStore.login(u,p);
+  if (ok){
+    sessionStorage.setItem("almizan_admin_auth","1");
+    location.href = "index.html";
+  } else {
+    alert("بيانات الدخول غير صحيحة");
+  }
+});
+document.getElementById("loginPass").addEventListener("keydown",(e)=>{ if(e.key==="Enter") document.getElementById("loginBtn").click(); });
+</script>
+</body>
+</html>
