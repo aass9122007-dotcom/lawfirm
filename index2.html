@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | مكتب الميزان للمحاماة</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="admin-body">
+
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">⚖️ <span>لوحة الميزان</span></div>
+    <nav class="admin-nav" id="adminNav">
+      <a href="#overview" data-tab="overview" class="active">📊 نظرة عامة</a>
+      <a href="#bookings" data-tab="bookings">📅 الحجوزات والمواعيد</a>
+      <a href="#payments" data-tab="payments">💳 المدفوعات</a>
+      <a href="#lawyers" data-tab="lawyers">👤 المحامون</a>
+      <a href="#availability" data-tab="availability">🕐 الأوقات المتاحة</a>
+      <a href="#services" data-tab="services">🗂️ الخدمات والأسعار</a>
+      <a href="#clients" data-tab="clients">🧾 العملاء</a>
+      <a href="#articles" data-tab="articles">📰 المقالات</a>
+      <a href="#files" data-tab="files">📎 الملفات المرفوعة</a>
+      <a href="#ratings" data-tab="ratings">⭐ التقييمات</a>
+    </nav>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.1)">
+      <a href="../index.html" style="display:block;padding:10px 14px;color:#B7C1CF;font-size:.85rem">← عرض الموقع</a>
+      <a href="#" id="logoutBtn" style="display:block;padding:10px 14px;color:#ef9aa8;font-size:.85rem">تسجيل الخروج</a>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h2 style="margin-bottom:2px" id="tabTitle">نظرة عامة</h2>
+        <p style="margin:0;color:var(--text-muted);font-size:.85rem">إدارة كاملة لعمليات المكتب من مكان واحد</p>
+      </div>
+      <button class="icon-btn" id="themeToggleAdmin" aria-label="تبديل الوضع الليلي">🌙</button>
+    </div>
+
+    <!-- نظرة عامة -->
+    <section class="admin-tab-panel active" data-panel="overview">
+      <div class="admin-kpis">
+        <div class="kpi"><b id="kpiBookings">0</b><span>إجمالي الحجوزات</span></div>
+        <div class="kpi"><b id="kpiPending">0</b><span>بانتظار مراجعة الدفع</span></div>
+        <div class="kpi"><b id="kpiClients">0</b><span>عدد العملاء</span></div>
+        <div class="kpi"><b id="kpiRating">0.0</b><span>متوسط التقييم</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">أحدث الحجوزات</h3></div>
+        <div class="table-wrap"><table id="recentBookingsTable"><thead><tr><th>العميل</th><th>التخصص</th><th>المحامي</th><th>الموعد</th><th>الحالة</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- الحجوزات -->
+    <section class="admin-tab-panel" data-panel="bookings">
+      <div class="panel">
+        <div class="panel-head">
+          <h3 style="margin:0">كل الحجوزات</h3>
+          <div class="tabs" id="bookingStatusFilter" style="margin:0">
+            <button class="tab-btn active" data-status="الكل">الكل</button>
+            <button class="tab-btn" data-status="بانتظار الدفع">بانتظار الدفع</button>
+            <button class="tab-btn" data-status="قيد المراجعة">قيد المراجعة</button>
+            <button class="tab-btn" data-status="مؤكد">مؤكد</button>
+            <button class="tab-btn" data-status="ملغي">ملغي</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table id="bookingsTable"><thead><tr><th>#</th><th>العميل</th><th>النوع</th><th>التخصص</th><th>المحامي</th><th>الموعد</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- المدفوعات -->
+    <section class="admin-tab-panel" data-panel="payments">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">إثباتات الدفع الواردة</h3></div>
+        <div class="table-wrap"><table id="paymentsTable"><thead><tr><th>#</th><th>الحجز</th><th>المبلغ</th><th>الإيصال</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- المحامون -->
+    <section class="admin-tab-panel" data-panel="lawyers">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">إدارة المحامين</h3><button class="btn btn-primary btn-sm" id="addLawyerBtn">+ إضافة محامٍ</button></div>
+        <div class="table-wrap"><table id="lawyersTable"><thead><tr><th>الاسم</th><th>الدور</th><th>التخصصات</th><th>السعر</th><th>الحالة</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- الأوقات المتاحة -->
+    <section class="admin-tab-panel" data-panel="availability">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">إدارة الأوقات المتاحة لكل محامٍ</h3></div>
+        <div id="availabilityList"></div>
+      </div>
+    </section>
+
+    <!-- الخدمات -->
+    <section class="admin-tab-panel" data-panel="services">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">إدارة الخدمات والأسعار</h3><button class="btn btn-primary btn-sm" id="addServiceBtn">+ إضافة خدمة</button></div>
+        <div class="table-wrap"><table id="servicesTable"><thead><tr><th>العنوان</th><th>التخصص</th><th>السعر الأساسي</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- العملاء -->
+    <section class="admin-tab-panel" data-panel="clients">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">قاعدة بيانات العملاء</h3></div>
+        <div class="table-wrap"><table id="clientsTable"><thead><tr><th>الاسم</th><th>الهاتف</th><th>البريد الإلكتروني</th><th>تاريخ التسجيل</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- المقالات -->
+    <section class="admin-tab-panel" data-panel="articles">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">إدارة المقالات القانونية</h3><button class="btn btn-primary btn-sm" id="addArticleBtn">+ مقال جديد</button></div>
+        <div class="table-wrap"><table id="articlesTable"><thead><tr><th>العنوان</th><th>التصنيف</th><th>الكاتب</th><th>التاريخ</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- الملفات -->
+    <section class="admin-tab-panel" data-panel="files">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">الملفات المرفوعة من العملاء</h3></div>
+        <div class="table-wrap"><table id="filesTable"><thead><tr><th>اسم الملف</th><th>مرتبط بحجز</th><th>النوع</th><th>الحجم</th><th>إجراءات</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- التقييمات -->
+    <section class="admin-tab-panel" data-panel="ratings">
+      <div class="panel">
+        <div class="panel-head"><h3 style="margin:0">تقييمات العملاء</h3></div>
+        <div class="table-wrap"><table id="ratingsTable"><thead><tr><th>الحجز</th><th>التقييم</th><th>التعليق</th><th>التاريخ</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- نافذة منبثقة عامة للإضافة/التعديل -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle" style="margin:0">إضافة</h3><button class="modal-close" id="modalCloseBtn">✕</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>
